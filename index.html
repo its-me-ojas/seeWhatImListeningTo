@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Currently Playing on Spotify</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      color: #1DB954;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    #songInfo {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 1.2rem;
+    }
+
+    iframe {
+      border: none;
+      margin-top: 20px;
+      width: 100%;
+      max-width: 500px;
+      height: 380px;
+      /* Adjust the height to make sure it's enough to show the full player */
+    }
+
+    .container {
+      text-align: center;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #282828;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+  <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://open.spotify.com;">
+</head>
+
+<body>
+  <div class="container">
+    <h1>Currently Playing on Spotify</h1>
+    <div id="songInfo">Loading...</div>
+  </div>
+
+  <script>
+    async function fetchCurrentSong() {
+      const response = await fetch('http://localhost:8888/current');
+      const data = await response.json();
+      const songInfo = document.getElementById('songInfo');
+
+      if (data.song) {
+        songInfo.innerHTML = `
+                    <p>Currently playing: <strong>${data.song}</strong> by <strong>${data.artist}</strong></p>
+                    <iframe src="https://open.spotify.com/embed/track/${data.track_id}" allowtransparency="true" allow="encrypted-media"></iframe>
+                `;
+      } else {
+        songInfo.innerHTML = '<p>No track currently playing.</p>';
+      }
+    }
+
+    fetchCurrentSong();
+    setInterval(fetchCurrentSong, 30000); // Refresh every 30 seconds
+  </script>
+</body>
+
+</html>
